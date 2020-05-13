@@ -53,6 +53,12 @@ def E3(lines):
     """
     统计该国人又的年龄分布，年龄段分(0-18， 19-28， 29-38，39-48, 49-59，>60)
     """
+    age_range = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (E3_helper(x[8]),1)) \
+        .reduceByKey(add)
+    output = age_range.collect()
+    for (age, num) in output:
+        print(age, num)
 
 def E3_helper(birthday):
     """
@@ -102,9 +108,11 @@ def N1(lines):
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
     female_output = female_surname.collect()
 
+    print('Male Surnames')
     for (char, num) in male_output:
         print(char, num)
 
+    print('Feale Surnames')
     for (char, num) in female_output:
         print(char, num)
 
@@ -115,9 +123,11 @@ def N2_3(lines):
     判断当前城市是否处 于老龄化社会，
     (当一个国家或地区60岁以上老年人又占人又总数的10%，或65岁以上老年人占人又总数的7%，
     即意味着这个国家或地区的人又处于老龄化社会)
-    说一下该国平均人又最年轻的5个城市
+    说一下该国平均人口最年轻的5个城市
     """
-
+    # 计算各城市人口平均年龄
+    # 计算各城市人口60岁以上人口占比
+    # 计算各城市人口65岁以上人口占比
 
 def N4(lines):
     """
