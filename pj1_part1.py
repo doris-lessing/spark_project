@@ -28,7 +28,7 @@ def E1_2(lines):
         .map(lambda x: (x[8], 1))\
         .reduceByKey(add)\
         .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
-
+    output = birthday.collect()
     least_pop = output[0]
     most_pop = output[-1]
     print(least_pop)
@@ -83,7 +83,7 @@ def N1(lines):
     """
     统计男性，女性最常见的10个姓，并用词云进行可视化展示
     """
-    
+
 
 
 def N2_3(lines):
