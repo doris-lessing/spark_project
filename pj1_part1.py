@@ -13,11 +13,13 @@ def E1(lines):
     male_birthday = lines.map(lambda x: x.split("\t"))\
                          .filter(lambda x: x[6] == 'E')\
                          .map(lambda x: (datetime.datetime.strptime(x[8], '%d/%m/%Y'), x[2]+' '+x[3]))\
-                         .sortByKey(ascending=True)
+                         .sortByKey(ascending=False)
     # 读取第一个元素，即年龄最大的男人
     output = male_birthday.top(4)
     for (date, name) in output:
         print(date, name)
+
+    #!日期类型没法倒序
 
 
 def E1_2(lines):
@@ -34,24 +36,30 @@ def E1_2(lines):
     print(least_pop)
     print(most_pop)
 
+
 def E2(lines):
     """
     统计姓名中最常出现的字母
     """
     names = lines.map(lambda x: x.split("\t")) \
         .map(lambda x: x[2]+x[3])\
-        .flatMap(lambda x:list(x)) \
+        .flatMap(lambda x: list(x)) \
         .map(lambda x: (x, 1)) \
         .reduceByKey(add) \
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
-    output = names.top(1)
+    output = names.collect()
     for (char, num) in output:
         print(char, num)
 
 def E3(lines):
     """
     统计该国人又的年龄分布，年龄段分(0-18， 19-28， 29-38，39-48, 49-59，>60)
+    """
+
+def E3_helper(birthday):
+    """
+    根据生日计算年龄段
     """
 
 
@@ -83,7 +91,25 @@ def N1(lines):
     """
     统计男性，女性最常见的10个姓，并用词云进行可视化展示
     """
+    male_surname = lines.map(lambda x: x.split("\t")) \
+        .filter(lambda x: x[6] == 'E') \
+        .map(lambda x: (x[3],1)) \
+        .reduceByKey(add) \
+        .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
+    male_output = male_surname.collect()
 
+    female_surname = lines.map(lambda x: x.split("\t")) \
+        .filter(lambda x: x[6] == 'k') \
+        .map(lambda x: (x[3],1)) \
+        .reduceByKey(add) \
+        .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
+    female_output = female_surname.collect()
+
+    for (char, num) in male_output:
+        print(char, num)
+
+    for (char, num) in female_output:
+        print(char, num)
 
 
 def N2_3(lines):
@@ -94,6 +120,7 @@ def N2_3(lines):
     即意味着这个国家或地区的人又处于老龄化社会)
     说一下该国平均人又最年轻的5个城市
     """
+    
 
 def N4(lines):
     """
