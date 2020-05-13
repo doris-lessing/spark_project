@@ -24,6 +24,16 @@ def E1_2(lines):
     """
     统计数据中出生人数最少的日期和出生人数最多的日期
     """
+    birthday = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[8], 1))\
+        .reduceByKey(add)\
+        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
+    
+    output = birthday.collect()
+    least_pop = output[0]
+    most_pop = output[-1]
+    print(least_pop)
+    print(most_pop)
 
 def E2(lines):
     """
@@ -82,4 +92,5 @@ if __name__ == '__main__':
     sc = SparkContext(appName="PythonWordCount")
     lines = sc.textFile(sys.argv[1], 1)
     E1(lines)
+    E2(lines)
     sc.stop()
