@@ -86,6 +86,8 @@ def E3_helper(birthday):
     elif age >= 60:
         age_range = '>=60'
 
+    return age_range
+
 def E4(lines):
     """
     按月份，统计该国人口生日在每个月上的分布
@@ -95,6 +97,7 @@ def E4(lines):
         .reduceByKey(add)
 
     output = birthmonth.collect()
+    print('birth month distribution')
     for (char, num) in output:
         print(char, num)
 
@@ -107,6 +110,7 @@ def E5(lines):
         .reduceByKey(add)
 
     output = gender.collect()
+    print('Male and Females')
     for (char, num) in output:
         print(char, num)
 
@@ -163,7 +167,7 @@ def N4(lines):
     """
     # 统计前10大人口城市
     city_population = lines.map(lambda x: x.split("\t")) \
-        .map(lambda x: (x[11],1))\
+        .map(lambda x: (x[11], 1))\
         .reduceByKey(add) \
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
