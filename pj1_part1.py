@@ -52,7 +52,7 @@ def E2(lines):
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
     output = names.collect()
-    print('Most common letter in names',output[0])
+    print('Most common letter in names', output[0])
 
 def E3(lines):
     """
@@ -70,8 +70,7 @@ def E3_helper(birthday):
     """
     根据生日计算年龄段
     """
-    birth_year = int(birthday.split('/')[2])
-    age = 2009 - birth_year  # 此数据集获取于2009
+    age = get_age(birthday)
 
     if age <= 18:
         age_range = '0-18'
@@ -87,6 +86,13 @@ def E3_helper(birthday):
         age_range = '>=60'
 
     return age_range
+
+
+def get_age(birthday):
+    birth_year = int(birthday.split('/')[2])
+    age = 2009 - birth_year  # 此数据集获取于2009
+    return age
+
 
 def E4(lines):
     """
@@ -158,12 +164,16 @@ def N2_3(lines):
     说一下该国平均人口最年轻的5个城市
     """
     # 计算各城市人口平均年龄
+    city_age = lines.map(lambda x: x.split("\t"))\
+        map(lambda x: (x[11], get_age(x[8])))\
+
     # 计算各城市人口60岁以上人口占比
     # 计算各城市人口65岁以上人口占比
 
-def N4(lines):
+def N4_5(lines):
     """
-    统计一下该国前10大人又城市中，每个城市的前3大姓氏，并分析姓氏与所在城市是否具有相关性
+    统计一下该国前10大人口城市中，每个城市的前3大姓氏，并分析姓氏与所在城市是否具有相关性
+    计算一下该国前10大人口城市中，每个城市的人口生日最集中分布的是哪2个月
     """
     # 统计前10大人口城市
     city_population = lines.map(lambda x: x.split("\t")) \
@@ -172,20 +182,16 @@ def N4(lines):
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
     city_population = city_population.collect()
-    #top_10_city = city_population[0:9]
-    i = 0
-    for (name, population) in city_population:
-        print(name, population)
-        i += 1
-        if i == 10:
-            break
+    top_10_city = city_population[0:9]
 
+    city_surname = lines.map(lambda x: x.split("\t"))\
+        .filter(lambda x: x[11] in top_10_city)\
+        .map(lambda x: (x[11], x[3]))\
 
-def N5(lines):
-    """
-    计算一下该国前10大人又城市中，每个城市的人口生日最集中分布的是哪2个月
-    """
-
+    city_birthmonth = lines.map(lambda x: x.split("\t")) \
+        .filter(lambda x: x[11] in top_10_city) \
+        .map(lambda x: (x[11], x[8].split('/')[1])) \
+        
 
 
 if __name__ == '__main__':
