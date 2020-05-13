@@ -29,9 +29,6 @@ def E1_2(lines):
         .reduceByKey(add)\
         .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
 
-    output = birthday.collect()
-    for (date, num) in output:
-        print(date, num)
     least_pop = output[0]
     most_pop = output[-1]
     print(least_pop)
@@ -44,10 +41,11 @@ def E2(lines):
     names = lines.map(lambda x: x.split("\t")) \
         .map(lambda x: x[2]+x[3])\
         .flatMap(lambda x:list(x)) \
+        .map(lambda x: (x, 1)) \
         .reduceByKey(add) \
-        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
+        .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
-    output = names.collect()
+    output = names.top(1)
     for (char, num) in output:
         print(char, num)
 
@@ -87,6 +85,7 @@ def N1(lines):
     """
     
 
+
 def N2_3(lines):
     """
     统计每个城市市民的平均年龄，统计分析每个城市的人口老龄化程度，
@@ -104,7 +103,7 @@ def N4(lines):
 
 def N5(lines):
     """
-    计算一下该国前10大人又城市中，每个城市的人又生日最集中分布的是哪2个月
+    计算一下该国前10大人又城市中，每个城市的人口生日最集中分布的是哪2个月
     """
 
 
@@ -118,6 +117,7 @@ if __name__ == '__main__':
     E1(lines)
     E1_2(lines)
     E2(lines)
+    E3(lines)
     E4(lines)
     E5(lines)
     sc.stop()
