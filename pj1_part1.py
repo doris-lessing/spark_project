@@ -28,7 +28,7 @@ def E1_2(lines):
         .map(lambda x: (x[8], 1))\
         .reduceByKey(add)\
         .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
-    
+
     output = birthday.collect()
     least_pop = output[0]
     most_pop = output[-1]
@@ -92,5 +92,5 @@ if __name__ == '__main__':
     sc = SparkContext(appName="PythonWordCount")
     lines = sc.textFile(sys.argv[1], 1)
     E1(lines)
-    E2(lines)
+    E1_2(lines)
     sc.stop()
