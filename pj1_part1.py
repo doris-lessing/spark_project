@@ -1,9 +1,7 @@
 import sys
 from operator import add
 import datetime
-
 from pyspark import SparkContext
-
 
 
 def E1(lines):
@@ -49,8 +47,7 @@ def E2(lines):
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
     output = names.collect()
-    for (char, num) in output:
-        print(char, num)
+    print(output[0])
 
 def E3(lines):
     """
@@ -120,7 +117,7 @@ def N2_3(lines):
     即意味着这个国家或地区的人又处于老龄化社会)
     说一下该国平均人又最年轻的5个城市
     """
-    
+
 
 def N4(lines):
     """
@@ -147,4 +144,8 @@ if __name__ == '__main__':
     E3(lines)
     E4(lines)
     E5(lines)
+    N1(lines)
+    N2_3(lines)
+    N4(lines)
+    N5(lines)
     sc.stop()
