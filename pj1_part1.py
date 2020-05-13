@@ -30,6 +30,8 @@ def E1_2(lines):
         .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
 
     output = birthday.collect()
+    for (date, num) in output:
+        print(date, num)
     least_pop = output[0]
     most_pop = output[-1]
     print(least_pop)
@@ -39,6 +41,15 @@ def E2(lines):
     """
     统计姓名中最常出现的字母
     """
+    names = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: x[2]+x[3])\
+        .flatMap(lambda x:list(x)) \
+        .reduceByKey(add) \
+        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
+
+    output = names.collect()
+    for (char, num) in output:
+        print(char, num)
 
 def E3(lines):
     """
@@ -48,20 +59,33 @@ def E3(lines):
 
 def E4(lines):
     """
-    按月份，统计该国人又生日在每个月上的分布
+    按月份，统计该国人口生日在每个月上的分布
     """
+    birthmonth = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[8].split('/')[1], 1)) \
+        .reduceByKey(add)
 
+    output = birthmonth.collect()
+    for (char, num) in output:
+        print(char, num)
 
 def E5(lines):
     """
     统计一下该国的男女比例，男女人数
     """
+    gender = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[6], 1)) \
+        .reduceByKey(add)
 
+    output = gender.collect()
+    for (char, num) in output:
+        print(char, num)
 
 def N1(lines):
     """
     统计男性，女性最常见的10个姓，并用词云进行可视化展示
     """
+    
 
 def N2_3(lines):
     """
@@ -93,4 +117,7 @@ if __name__ == '__main__':
     lines = sc.textFile(sys.argv[1], 1)
     E1(lines)
     E1_2(lines)
+    E2(lines)
+    E4(lines)
+    E5(lines)
     sc.stop()
