@@ -25,15 +25,20 @@ def E1_2(lines):
     统计数据中出生人数最少的日期和出生人数最多的日期
     """
     birthday = lines.map(lambda x: x.split("\t")) \
-        .map(lambda x: (x[8], 1))\
+        .map(lambda x: (E1_2_helper(x[8]), 1))\
         .reduceByKey(add)\
         .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
     output = birthday.collect()
     least_pop = output[0]
     most_pop = output[-1]
-    print(least_pop)
-    print(most_pop)
+    print('least popular birthday: ',least_pop)
+    print('most popular birthday: ',most_pop)
 
+
+def E1_2_helper(birthday):
+    dates = birthday.split('/')
+    birthdate = dates[0]+'/'+dates[1]
+    return birthdate
 
 def E2(lines):
     """
@@ -47,7 +52,7 @@ def E2(lines):
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
     output = names.collect()
-    print(output[0])
+    print('Most common letter in names',output[0])
 
 def E3(lines):
     """
@@ -57,6 +62,7 @@ def E3(lines):
         .map(lambda x: (E3_helper(x[8]),1)) \
         .reduceByKey(add)
     output = age_range.collect()
+    print('Age distribution:')
     for (age, num) in output:
         print(age, num)
 
@@ -64,7 +70,21 @@ def E3_helper(birthday):
     """
     根据生日计算年龄段
     """
+    birth_year = int(birthday.split('/')[2])
+    age = 2009 - birth_year  # 此数据集获取于2009
 
+    if age <= 18:
+        age_range = '0-18'
+    elif age <= 28:
+        age_range = '19-28'
+    elif age <= 38:
+        age_range = '29-38'
+    elif age <= 48:
+        age_range = '39-48'
+    elif age <= 59:
+        age_range = '49-59'
+    elif age >= 60:
+        age_range = '>=60'
 
 def E4(lines):
     """
@@ -161,6 +181,7 @@ def N5(lines):
     """
     计算一下该国前10大人又城市中，每个城市的人口生日最集中分布的是哪2个月
     """
+
 
 
 if __name__ == '__main__':
