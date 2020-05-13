@@ -13,12 +13,11 @@ def E1(lines):
     male_birthday = lines.map(lambda x: x.split("\t"))\
                          .filter(lambda x: x[6] == 'E')\
                          .map(lambda x: (datetime.datetime.strptime(x[8], '%d/%m/%Y'), x[2]+' '+x[3]))\
-                         .groupByKey()\
                          .sortByKey(ascending=False)
     # 读取第一个元素，即年龄最大的男人
     output = male_birthday.top(1)
     for (date, name) in output:
-        print(date, name[0])
+        print(date, name)
 
 
 def E1_2(lines):
