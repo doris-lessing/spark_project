@@ -15,7 +15,7 @@ def E1(lines):
                          .map(lambda x: (datetime.datetime.strptime(x[8], '%d/%m/%Y'), x[2]+' '+x[3]))\
                          .sortByKey(ascending=True)
     # 读取第一个元素，即年龄最大的男人
-    output = male_birthday.top(1)
+    output = male_birthday.top(4)
     for (date, name) in output:
         print(date, name)
 
