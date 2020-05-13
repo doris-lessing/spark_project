@@ -4,15 +4,6 @@ import datetime
 
 from pyspark import SparkContext
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: wordcount<file>"
-        exit(-1)
-
-    sc = SparkContext(appName="PythonWordCount")
-    lines = sc.textFile(sys.argv[1], 1)
-    E1(lines)
-    sc.stop()
 
 
 def E1(lines):
@@ -80,3 +71,14 @@ def N5(lines):
     """
     计算一下该国前10大人又城市中，每个城市的人又生日最集中分布的是哪2个月
     """
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: wordcount<file>"
+        exit(-1)
+
+    sc = SparkContext(appName="PythonWordCount")
+    lines = sc.textFile(sys.argv[1], 1)
+    E1(lines)
+    sc.stop()
