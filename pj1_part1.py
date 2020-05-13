@@ -102,7 +102,7 @@ def N1(lines):
     male_output = male_surname.collect()
 
     female_surname = lines.map(lambda x: x.split("\t")) \
-        .filter(lambda x: x[6] == 'k') \
+        .filter(lambda x: x[6] == 'K') \
         .map(lambda x: (x[3],1)) \
         .reduceByKey(add) \
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
@@ -133,6 +133,16 @@ def N4(lines):
     """
     统计一下该国前10大人又城市中，每个城市的前3大姓氏，并分析姓氏与所在城市是否具有相关性
     """
+    # 统计前10大人口城市
+    city_population = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[11],1))\
+        .reduceByKey(add) \
+        .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
+
+    city_population = city_population.collect()
+    top_10_city = city_population[0:9]
+    for (name, population) in top_10_city:
+        print(name, population)
 
 
 def N5(lines):
