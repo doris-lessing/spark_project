@@ -109,12 +109,20 @@ def N1(lines):
     female_output = female_surname.collect()
 
     print('Male Surnames')
+    i = 0
     for (char, num) in male_output:
         print(char, num)
+        i += 1
+        if i == 10:
+            break
 
-    print('Feale Surnames')
+    i = 0
+    print('Female Surnames')
     for (char, num) in female_output:
         print(char, num)
+        i += 1
+        if i == 10:
+            break
 
 
 def N2_3(lines):
@@ -140,9 +148,13 @@ def N4(lines):
         .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
 
     city_population = city_population.collect()
-    top_10_city = city_population[0:9]
-    for (name, population) in top_10_city:
+    #top_10_city = city_population[0:9]
+    i = 0
+    for (name, population) in city_population:
         print(name, population)
+        i += 1
+        if i == 10:
+            break
 
 
 def N5(lines):
