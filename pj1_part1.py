@@ -170,7 +170,8 @@ def N2_3(lines):
     # 计算各城市人口平均年龄
     city_age = lines.map(lambda x: x.split("\t")) \
         .map(lambda x: (x[11], get_age(x[8]))) \
-        .groupByKey()
+        .groupByKey() \
+        .mapValues(mean)
     output = city_age.collect()
     print(type(output[0][1]))
 
