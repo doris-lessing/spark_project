@@ -40,6 +40,7 @@ def E1_2_helper(birthday):
     birthdate = dates[0]+'/'+dates[1]
     return birthdate
 
+
 def E2(lines):
     """
     统计姓名中最常出现的字母
@@ -53,6 +54,7 @@ def E2(lines):
 
     output = names.collect()
     print('Most common letter in names', output[0])
+
 
 def E3(lines):
     """
@@ -90,7 +92,7 @@ def E3_helper(birthday):
 
 def get_age(birthday):
     birth_year = int(birthday.split('/')[2])
-    age = 2009 - birth_year  # 此数据集获取于2009
+    age = 2009 - birth_year  # 此数据集获取于2009,所以年龄用2009算
     return age
 
 
@@ -107,6 +109,7 @@ def E4(lines):
     for (char, num) in output:
         print(char, num)
 
+
 def E5(lines):
     """
     统计一下该国的男女比例，男女人数
@@ -119,6 +122,7 @@ def E5(lines):
     print('Male and Females')
     for (char, num) in output:
         print(char, num)
+
 
 def N1(lines):
     """
@@ -159,16 +163,21 @@ def N2_3(lines):
     """
     统计每个城市市民的平均年龄，统计分析每个城市的人口老龄化程度，
     判断当前城市是否处 于老龄化社会，
-    (当一个国家或地区60岁以上老年人又占人又总数的10%，或65岁以上老年人占人又总数的7%，
+    (当一个国家或地区60岁以上老年人又占人又总数的10%，或65岁以上老年人占人口总数的7%，
     即意味着这个国家或地区的人又处于老龄化社会)
     说一下该国平均人口最年轻的5个城市
     """
     # 计算各城市人口平均年龄
-    city_age = lines.map(lambda x: x.split("\t"))\
-        map(lambda x: (x[11], get_age(x[8])))\
+    city_age = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[11], get_age(x[8]))) \
+        .groupByKey()
+    output = city_age.collect()
+    print(type(ouput[0][1]))
 
     # 计算各城市人口60岁以上人口占比
+
     # 计算各城市人口65岁以上人口占比
+
 
 def N4_5(lines):
     """
@@ -191,7 +200,7 @@ def N4_5(lines):
     city_birthmonth = lines.map(lambda x: x.split("\t")) \
         .filter(lambda x: x[11] in top_10_city) \
         .map(lambda x: (x[11], x[8].split('/')[1])) \
-        
+
 
 
 if __name__ == '__main__':
@@ -201,14 +210,13 @@ if __name__ == '__main__':
 
     sc = SparkContext(appName="PythonWordCount")
     lines = sc.textFile(sys.argv[1], 1)
-    E1(lines)
-    E1_2(lines)
-    E2(lines)
-    E3(lines)
-    E4(lines)
-    E5(lines)
-    N1(lines)
+    #E1(lines)
+    #E1_2(lines)
+    #E2(lines)
+    #E3(lines)
+    #E4(lines)
+    #E5(lines)
+    #N1(lines)
     N2_3(lines)
-    N4(lines)
-    N5(lines)
+    #N4_5(lines)
     sc.stop()
