@@ -172,7 +172,7 @@ def N2_3(lines):
         .map(lambda x: (x[11], get_age(x[8]))) \
         .groupByKey()
     output = city_age.collect()
-    print(type(ouput[0][1]))
+    print(type(output[0][1]))
 
     # 计算各城市人口60岁以上人口占比
 
