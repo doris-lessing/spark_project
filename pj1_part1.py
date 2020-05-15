@@ -1,6 +1,7 @@
 import sys
 from operator import add
 import datetime
+import numpy as np
 from pyspark import SparkContext
 
 
@@ -10,14 +11,32 @@ def E1(lines):
     """
     male_birthday = lines.map(lambda x: x.split("\t"))\
                          .filter(lambda x: x[6] == 'E')\
-                         .map(lambda x: (datetime.datetime.strptime(x[8], '%d/%m/%Y'), x[2]+' '+x[3]))\
-                         .sortByKey(ascending=False)
+                         .map(lambda x: (E1_helper(x[8]), x[2]+' '+x[3]))\
+                         .sortByKey()
     # 读取第一个元素，即年龄最大的男人
-    output = male_birthday.top(4)
+    output = male_birthday.takeOrdered(100)
     for (date, name) in output:
         print(date, name)
 
-    #!日期类型没法倒序
+
+def E1_helper(birthday):
+    dates = birthday.split('/')
+    if len(dates[0])==1:
+        day='0'+dates[0]
+    elif len(dates[0])==2:
+        day=dates[0]
+    else:
+        day='99'
+    if len(dates[1])==1:
+        month='0'+dates[1]
+    elif len(dates[1])==2:
+        month=dates[1]
+    else:
+        month='99'
+    year = dates[2]
+    birthday_num=int(year+month+day)
+    return birthday_num
+
 
 
 def E1_2(lines):
@@ -29,7 +48,17 @@ def E1_2(lines):
         .reduceByKey(add)\
         .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
     output = birthday.collect()
-    least_pop = output[0]
+    least_pop = output[0:10]
+    most_pop = output[-1]
+    print('least popular birthdate: ',least_pop)
+    print('most popular birthdate: ',most_pop)
+
+    birthday = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[8], 1))\
+        .reduceByKey(add)\
+        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
+    output = birthday.collect()
+    least_pop = output[0:10]
     most_pop = output[-1]
     print('least popular birthday: ',least_pop)
     print('most popular birthday: ',most_pop)
@@ -92,7 +121,7 @@ def E3_helper(birthday):
 
 def get_age(birthday):
     birth_year = int(birthday.split('/')[2])
-    age = 2009 - birth_year  # 此数据集获取于2009,所以年龄用2009算
+    age = 2016 - birth_year  # 此数据集获取于2016,所以年龄用2016算
     return age
 
 
@@ -167,18 +196,61 @@ def N2_3(lines):
     即意味着这个国家或地区的人又处于老龄化社会)
     说一下该国平均人口最年轻的5个城市
     """
+
     # 计算各城市人口平均年龄
     city_age = lines.map(lambda x: x.split("\t")) \
         .map(lambda x: (x[11], get_age(x[8]))) \
         .groupByKey() \
-        .mapValues(mean)
+        .mapValues(N2_3_helper_1) \
+        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
     output = city_age.collect()
-    print(type(output[0][1]))
+    for (char, num) in output:
+        print(char, num)
 
     # 计算各城市人口60岁以上人口占比
-
+    city_old_1 = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[11], get_age(x[8]))) \
+        .groupByKey() \
+        .mapValues(N2_3_helper_2) \
+        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
+    output = city_old_1.collect()
+    for (char, num) in output:
+        print(char, num)
     # 计算各城市人口65岁以上人口占比
+    city_old_2 = lines.map(lambda x: x.split("\t")) \
+        .map(lambda x: (x[11], get_age(x[8]))) \
+        .groupByKey() \
+        .mapValues(N2_3_helper_3) \
+        .sortBy(ascending=True, numPartitions=None, keyfunc=lambda x: x[1])
+    output = city_old_2.collect()
+    for (char, num) in output:
+        print(char, num)
 
+def N2_3_helper_1(l):
+    sum=0
+    count=0
+    for i in l:
+        sum += i
+        count += 1
+    return sum/count
+
+def N2_3_helper_2(l):
+    total=0
+    old =0
+    for i in l:
+        if i >60:
+            old +=1
+        total +=1
+    return old/total
+
+def N2_3_helper_3(l):
+    total=0
+    old =0
+    for i in l:
+        if i >65:
+            old +=1
+        total +=1
+    return old/total
 
 def N4_5(lines):
     """
@@ -189,19 +261,53 @@ def N4_5(lines):
     city_population = lines.map(lambda x: x.split("\t")) \
         .map(lambda x: (x[11], 1))\
         .reduceByKey(add) \
-        .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])
+        .sortBy(ascending=False, numPartitions=None, keyfunc=lambda x: x[1])\
+        .map(lambda x: x[0])
 
     city_population = city_population.collect()
-    top_10_city = city_population[0:9]
+    top_10_city = city_population[0:10]
 
     city_surname = lines.map(lambda x: x.split("\t"))\
         .filter(lambda x: x[11] in top_10_city)\
         .map(lambda x: (x[11], x[3]))\
+        .groupByKey() \
+        .mapValues(N4_5_helper_1)
+
+    output = city_birthmonth.collect()
+    for (city, surnames) in output:
+        print(city, surnames)
+
 
     city_birthmonth = lines.map(lambda x: x.split("\t")) \
         .filter(lambda x: x[11] in top_10_city) \
         .map(lambda x: (x[11], x[8].split('/')[1])) \
+        .groupByKey() \
+        .mapValues(N4_5_helper_2)
 
+    output = city_birthmonth.collect()
+    for (city, surnames) in output:
+        print(city, surnames)
+
+
+def N4_5_helper_1(l):
+    dic = {}
+    for i in l:
+        if i in dic.keys():
+            dic[i] +=1
+        else:
+            dic[i] = 1
+    res = sorted(dic.items(), key=lambda x: x[1], reverse=True)[0:3]
+    return res
+
+def N4_5_helper_2(l):
+    dic = {}
+    for i in l:
+        if i in dic.keys():
+            dic[i] +=1
+        else:
+            dic[i] = 1
+    res = sorted(dic.items(), key=lambda x: x[1], reverse=True)[0:2]
+    return res
 
 
 if __name__ == '__main__':
@@ -211,13 +317,13 @@ if __name__ == '__main__':
 
     sc = SparkContext(appName="PythonWordCount")
     lines = sc.textFile(sys.argv[1], 1)
-    #E1(lines)
-    #E1_2(lines)
-    #E2(lines)
-    #E3(lines)
-    #E4(lines)
-    #E5(lines)
-    #N1(lines)
+    E1(lines)
+    E1_2(lines)
+    E2(lines)
+    E3(lines)
+    E4(lines)
+    E5(lines)
+    N1(lines)
     N2_3(lines)
-    #N4_5(lines)
+    N4_5(lines)
     sc.stop()
